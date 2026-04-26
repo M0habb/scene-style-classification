@@ -2,6 +2,10 @@ import os
 import shutil
 from sklearn.model_selection import train_test_split
 
+## IMPORTANT: This file is responsible for splitting the data (20% val, 80% train). Meant to be run once. 
+## FILE ALREADY EXECUTED. DO NOT RUN
+## This means our data is split once and training and validation data are fixed. (No Cross-validation)
+
 SOURCE_DIR = "data/train"
 VAL_DIR = "data/val"
 
