@@ -10,7 +10,7 @@ BATCH_SIZE    = 32
 NUM_EPOCHS    = 20
 LEARNING_RATE = 1e-3
 NUM_WORKERS   = 2        # threads for data loading, concerned with mulithreading, used in data loading so if one 
-                         # core is busy another could load data
+                         # CPU thread is busy another could load data
 
 # Model
 IMG_SIZE      = 224      # resize all images to 224×224

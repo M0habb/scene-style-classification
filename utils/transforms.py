@@ -22,7 +22,7 @@ train_transforms = transforms.Compose([
     ),
 ])
 
-# Validation/Test: NO augmentation, only deterministic preprocessing
+# Validation/Test: NO augmentation, only deterministic preprocessing (Same ideas as before minus augmentation)
 val_transforms = transforms.Compose([
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
     transforms.ToTensor(),
