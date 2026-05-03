@@ -4,6 +4,7 @@ from train import train
 import torch
 from config import DEVICE
 import gc
+from evaluate import evaluate_all
 
 # READ: This file is for training the models. If your model is not pretrained, comment out entire pretrained
 # section. Leave get_loaders() line as is. Instantiate your model (replace with ur model class and rename)
@@ -47,4 +48,20 @@ best_acc, save_path = train(
     model      = vgg_model,
     model_name = "vgg_pretrained",
     lr         = 1e-4,       # lower LR when using pretrained weights
+)
+
+# Add each model to this dict as you finish training them
+model_registry = {
+    "vgg_pretrained": VGG16,
+    # "vgg":    VGG16,
+    # "cnn":    CustomCNN,
+    # "resnet": CustomResNet,
+    # "vit":    CustomViT,
+}
+
+all_results = evaluate_all(
+    model_registry=model_registry,
+    num_classes=num_classes,
+    class_names=class_names,
+    save_dir="models"
 )
