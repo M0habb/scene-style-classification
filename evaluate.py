@@ -1,3 +1,4 @@
+from config import LEARNING_RATE
 from models.vgg import VGG16
 from utils.dataset import get_loaders
 from train import train
