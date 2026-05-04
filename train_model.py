@@ -2,7 +2,7 @@ from models.vgg import VGG16
 from utils.dataset import get_loaders
 from train import train
 import torch
-from config import DEVICE
+from config import DEVICE, LEARNING_RATE, VIT_LEARNING_RATE
 import gc
 from evaluate import evaluate_all
 
@@ -47,8 +47,15 @@ print(f"   Classifier layers kept random (shape mismatch with ImageNet 1000 clas
 best_acc, save_path = train(
     model      = vgg_model,
     model_name = "vgg_pretrained",
-    lr         = 1e-4,       # lower LR when using pretrained weights
+    lr         = VIT_LEARNING_RATE,       # lower LR when using pretrained weights
 )
+
+# best_acc, save_path = train(
+#     model      = vit_model,
+#     model_name = "vit",
+#     lr         = VIT_LEARNING_RATE,
+#     use_grad_clip = True
+# )
 
 # Add each model to this dict as you finish training them
 model_registry = {
