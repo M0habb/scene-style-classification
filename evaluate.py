@@ -1,3 +1,5 @@
+import os
+import torch
 from models.vgg import VGG16
 from utils.dataset import get_loaders
 from utils.metrics import compute_all_metrics, plot_confusion_matrix, plot_all_models_comparison

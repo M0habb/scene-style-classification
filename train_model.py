@@ -2,10 +2,12 @@ from models.vgg import VGG16
 from utils.dataset import get_loaders
 from train import train
 import torch
-from models import cnn
+from models.cnn import cnn
 from config import DEVICE, LEARNING_RATE, VIT_LEARNING_RATE
 import gc
 from evaluate import evaluate_all
+from models.resnet import ResNet
+from train_distill import train_distill
 
 # READ: This file is for training the models. If your model is not pretrained, comment out entire pretrained
 # section. Leave get_loaders() line as is. Instantiate your model (replace with ur model class and rename)
@@ -52,12 +54,23 @@ best_acc, save_path = train(
     lr         = LEARNING_RATE,       # lower LR when using pretrained weights
 )
 
-# best_acc, save_path = train(
-#     model      = vit_model,
-#     model_name = "vit",
-#     lr         = VIT_LEARNING_RATE,
-#     use_grad_clip = True
-# )
+#=======================================================================
+#gio's
+# 1. Train ResNet teacher first (normal training)
+resnet_model = ResNet(num_classes=num_classes)
+best_acc, resnet_path = train(
+    model      = resnet_model,
+    model_name = "resnet",
+    lr         = LEARNING_RATE,
+)
+
+# 2. Distill ResNet → ViT
+train_distill(
+    teacher_path = resnet_path,   # "models/resnet_best.pth"
+    save_dir     = "models",
+    lr           = VIT_LEARNING_RATE,
+)
+#=======================================================================
 
 # Add each model to this dict as you finish training them
 model_registry = {
