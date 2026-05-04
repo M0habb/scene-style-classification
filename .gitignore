@@ -2,3 +2,5 @@ data/
 *.pth
 __pycache__/
 *.pyc
+.vs/
+.vs/slnx.sqlite
