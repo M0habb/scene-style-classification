@@ -2,7 +2,8 @@ from models.vgg import VGG16
 from utils.dataset import get_loaders
 from train import train
 import torch
-from models import cnn
+from models.cnn import cnn
+from models.ViT import ViT
 from config import DEVICE, LEARNING_RATE, VIT_LEARNING_RATE
 import gc
 from evaluate import evaluate_all
@@ -21,8 +22,9 @@ torch.cuda.empty_cache()
 _, _, class_names, num_classes = get_loaders()
 
 # Instantiate model
-#vgg_model = VGG16(num_classes=num_classes)
+vgg_model = VGG16(num_classes=num_classes)
 cnn_model = cnn()
+vit_model = ViT()
 
 # LOADING PRETRAINED WEIGHTS
 # PRETRAINED_PATH = "pretrained/vgg16_bn.pth"
@@ -46,18 +48,18 @@ cnn_model = cnn()
 
 
 # Train
-best_acc, save_path = train(
-    model      = cnn_model,
-    model_name = "cnn_v1",
-    lr         = LEARNING_RATE,       # lower LR when using pretrained weights
-)
+#best_acc, save_path = train(
+#    model      = cnn_model,
+#    model_name = "cnn_v1",
+#    lr         = LEARNING_RATE,       # lower LR when using pretrained weights
+#)
 
-# best_acc, save_path = train(
-#     model      = vit_model,
-#     model_name = "vit",
-#     lr         = VIT_LEARNING_RATE,
-#     use_grad_clip = True
-# )
+best_acc, save_path = train(
+     model      = vit_model,
+     model_name = "vit",
+     lr         = VIT_LEARNING_RATE,
+     use_grad_clip = True
+)
 
 # Add each model to this dict as you finish training them
 model_registry = {
