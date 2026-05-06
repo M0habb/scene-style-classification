@@ -9,21 +9,34 @@ class TestDataset(Dataset):
     def __init__(self, test_dir, transform=None):
         self.test_dir  = test_dir
         self.transform = transform
-        # Sort ensures consistent ordering
-        self.filenames = sorted([
+        all_files = sorted([
             f for f in os.listdir(test_dir)
             if f.lower().endswith(('.jpg', '.jpeg', '.png'))
         ])
+        
+        # Filter out corrupted/unreadable images upfront
+        self.filenames = []
+        skipped = 0
+        for f in all_files:
+            try:
+                img = Image.open(os.path.join(test_dir, f))
+                img.verify()  # checks file integrity without fully decoding
+                self.filenames.append(f)
+            except Exception:
+                print(f"⚠️  Skipping corrupted image: {f}")
+                skipped += 1
+        
+        print(f"✅ {len(self.filenames)} valid images | ⚠️  {skipped} skipped")
 
     def __len__(self):
         return len(self.filenames)
 
     def __getitem__(self, idx):
-        fname  = self.filenames[idx]
-        img    = Image.open(os.path.join(self.test_dir, fname)).convert('RGB')
+        fname = self.filenames[idx]
+        img   = Image.open(os.path.join(self.test_dir, fname)).convert('RGB')
         if self.transform:
             img = self.transform(img)
-        return img, fname   # return filename so we know which image got which label
+        return img, fname
 
 
 # 2. Load class names from training data
