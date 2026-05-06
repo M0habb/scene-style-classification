@@ -3,6 +3,7 @@ from utils.dataset import get_loaders
 from train import train
 import torch
 from models.cnn import cnn
+from models.vgg_v2 import VGG16_V2
 from config import DEVICE, LEARNING_RATE, VIT_LEARNING_RATE
 import gc
 from evaluate import evaluate_all
@@ -23,53 +24,54 @@ torch.cuda.empty_cache()
 _, _, class_names, num_classes = get_loaders()
 
 # Instantiate model
-#vgg_model = VGG16(num_classes=num_classes)
-cnn_model = cnn()
+vgg_model = VGG16(num_classes=num_classes)
+#cnn_model = cnn()
+vgg_model_2 = VGG16_V2()
 
 # LOADING PRETRAINED WEIGHTS
-# PRETRAINED_PATH = "pretrained/vgg16_bn.pth"
+PRETRAINED_PATH = "pretrained/vgg16_bn.pth"
 
 # # Load the pretrained state dict
-# pretrained_dict = torch.load(PRETRAINED_PATH, map_location=DEVICE)
+pretrained_dict = torch.load(PRETRAINED_PATH, map_location=DEVICE)
 
 # # Get the model's own state dict
-# model_dict = vgg_model.state_dict()
-# pretrained_dict = {
-#     k: v for k, v in pretrained_dict.items()
-#     if k in model_dict and model_dict[k].shape == v.shape
-# }
+model_dict = vgg_model_2.state_dict()
+pretrained_dict = {
+    k: v for k, v in pretrained_dict.items()
+    if k in model_dict and model_dict[k].shape == v.shape
+}
 
-# # Update model dict with pretrained weights
-# model_dict.update(pretrained_dict)
-# vgg_model.load_state_dict(model_dict)
+# Update model dict with pretrained weights
+model_dict.update(pretrained_dict)
+vgg_model_2.load_state_dict(model_dict)
 
-# print(f"✅ Pretrained weights loaded — {len(pretrained_dict)} layers transferred")
-# print(f"   Classifier layers kept random (shape mismatch with ImageNet 1000 classes)")
+print(f"✅ Pretrained weights loaded — {len(pretrained_dict)} layers transferred")
+print(f"   Classifier layers kept random (shape mismatch with ImageNet 1000 classes)")
 
 
 # Train
 best_acc, save_path = train(
-    model      = cnn_model,
-    model_name = "cnn_v1",
-    lr         = LEARNING_RATE,       # lower LR when using pretrained weights
+    model      = vgg_model_2,
+    model_name = "vgg_v2",
+    lr         = 1e-4,       # lower LR when using pretrained weights
 )
 
 #=======================================================================
-#gio's
-# 1. Train ResNet teacher first (normal training)
-resnet_model = ResNet(num_classes=num_classes)
-best_acc, resnet_path = train(
-    model      = resnet_model,
-    model_name = "resnet",
-    lr         = LEARNING_RATE,
-)
+# #gio's
+# # 1. Train ResNet teacher first (normal training)
+# resnet_model = ResNet(num_classes=num_classes)
+# best_acc, resnet_path = train(
+#     model      = resnet_model,
+#     model_name = "resnet",
+#     lr         = LEARNING_RATE,
+# )
 
-# 2. Distill ResNet → ViT
-train_distill(
-    teacher_path = resnet_path,   # "models/resnet_best.pth"
-    save_dir     = "models",
-    lr           = VIT_LEARNING_RATE,
-)
+# # 2. Distill ResNet → ViT
+# train_distill(
+#     teacher_path = resnet_path,   # "models/resnet_best.pth"
+#     save_dir     = "models",
+#     lr           = VIT_LEARNING_RATE,
+# )
 #=======================================================================
 
 # Add each model to this dict as you finish training them
