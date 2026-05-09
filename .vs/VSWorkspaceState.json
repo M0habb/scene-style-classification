@@ -4,6 +4,6 @@
     "\\models",
     "\\utils"
   ],
-  "SelectedNode": "\\train_model.py",
+  "SelectedNode": "\\train_distill.py",
   "PreviewInSolutionExplorer": false
 }
